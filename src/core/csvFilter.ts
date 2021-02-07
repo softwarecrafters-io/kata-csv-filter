@@ -9,7 +9,10 @@ export class CsvFilter {
 		const result = [];
 		result.push(this.lines[0]);
 		const fields = this.lines[1].split(',');
-		if ((!fields[4] || !fields[5]) && !(!fields[4] && !fields[5])) {
+		const ivaField = fields[4];
+		const igicField = fields[5];
+		const taxFieldsAreMutuallyExclusive = (!ivaField || !igicField) && !(!ivaField && !igicField);
+		if (taxFieldsAreMutuallyExclusive) {
 			result.push(this.lines[1]);
 		}
 		return result;
