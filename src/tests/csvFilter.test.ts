@@ -21,7 +21,7 @@ describe('CSV filter', () => {
 	});
 
 	it('allows only the correct lines when the igic tax is applied', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '7', netAmount: '930', nif: emptyField });
+		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '7', netAmount: '930' });
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -33,8 +33,6 @@ describe('CSV filter', () => {
 		const invoiceLine = fileWithOneInvoiceLineHaving({
 			ivaTax: '21',
 			igicTax: '7',
-			netAmount: '790',
-			nif: emptyField,
 		});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
@@ -44,7 +42,7 @@ describe('CSV filter', () => {
 	});
 
 	it('excludes lines with both tax field empty as one is required', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '', netAmount: '790', nif: emptyField });
+		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '' });
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -55,9 +53,6 @@ describe('CSV filter', () => {
 	it('excludes lines with non decimal tax fields', () => {
 		const invoiceLine = fileWithOneInvoiceLineHaving({
 			ivaTax: 'XYZ',
-			igicTax: '',
-			netAmount: '790',
-			nif: emptyField,
 		});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
@@ -70,8 +65,6 @@ describe('CSV filter', () => {
 		const invoiceLine = fileWithOneInvoiceLineHaving({
 			ivaTax: 'XYZ',
 			igicTax: '7',
-			netAmount: '790',
-			nif: emptyField,
 		});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
@@ -82,10 +75,7 @@ describe('CSV filter', () => {
 
 	it('excludes lines with miscalculated net amount for iva tax', () => {
 		const invoiceLine = fileWithOneInvoiceLineHaving({
-			ivaTax: '21',
-			igicTax: '',
 			netAmount: '900',
-			nif: emptyField,
 		});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
@@ -95,7 +85,7 @@ describe('CSV filter', () => {
 	});
 
 	it('excludes lines with miscalculated net amount for igic tax', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '7', netAmount: '900', nif: emptyField });
+		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '7', netAmount: '900' });
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
