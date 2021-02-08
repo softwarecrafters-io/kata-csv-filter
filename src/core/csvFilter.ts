@@ -8,24 +8,24 @@ export class CsvFilter {
 	get filteredLines() {
 		const header = this.lines[0];
 		const invoices = this.lines.slice(1);
-		return [header].concat(
-			invoices.filter((invoice) => {
-				const fields = invoice.split(',');
-				const ivaField = fields[4];
-				const igicField = fields[5];
-				const decimalRegex = '\\d+(\\.\\d+)?';
-				const taxFieldsAreMutuallyExclusive =
-					(ivaField.match(decimalRegex) || igicField.match(decimalRegex)) && (!ivaField || !igicField);
-				const grossAmountField = fields[2];
-				const netAmountField = fields[3];
-				const netAmountIsWellCalculated =
-					this.checkIfNetAmountIsCorrect(netAmountField, grossAmountField, ivaField) ||
-					this.checkIfNetAmountIsCorrect(netAmountField, grossAmountField, igicField);
-				const identifierFieldsAreMutuallyExclusive = !fields[7] || !fields[8];
-				return taxFieldsAreMutuallyExclusive && netAmountIsWellCalculated && identifierFieldsAreMutuallyExclusive;
-			})
-		);
+		return [header].concat(invoices.filter(this.validateInvoice));
 	}
+
+	private validateInvoice = (invoice) => {
+		const fields = invoice.split(',');
+		const ivaField = fields[4];
+		const igicField = fields[5];
+		const decimalRegex = '\\d+(\\.\\d+)?';
+		const taxFieldsAreMutuallyExclusive =
+			(ivaField.match(decimalRegex) || igicField.match(decimalRegex)) && (!ivaField || !igicField);
+		const grossAmountField = fields[2];
+		const netAmountField = fields[3];
+		const netAmountIsWellCalculated =
+			this.checkIfNetAmountIsCorrect(netAmountField, grossAmountField, ivaField) ||
+			this.checkIfNetAmountIsCorrect(netAmountField, grossAmountField, igicField);
+		const identifierFieldsAreMutuallyExclusive = !fields[7] || !fields[8];
+		return taxFieldsAreMutuallyExclusive && netAmountIsWellCalculated && identifierFieldsAreMutuallyExclusive;
+	};
 
 	private checkIfNetAmountIsCorrect(netAmountField: string, grossAmountField: string, taxField: string) {
 		const parsedNetAmount = parseFloat(netAmountField);
