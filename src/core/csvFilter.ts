@@ -14,12 +14,18 @@ export class CsvFilter {
 		const decimalRegex = '\\d+(\\.\\d+)?';
 		const taxFieldsAreMutuallyExclusive =
 			(ivaField.match(decimalRegex) || igicField.match(decimalRegex)) && (!ivaField || !igicField);
-		if (
-			taxFieldsAreMutuallyExclusive &&
-			parseFloat(fields[3]) === parseFloat(fields[2]) - (parseFloat(fields[2]) * parseFloat(ivaField)) / 100
-		) {
+		const grossAmountField = fields[2];
+		const netAmountField = fields[3];
+		if (taxFieldsAreMutuallyExclusive && this.checkIfNetAmountIsCorrect(netAmountField, grossAmountField, ivaField)) {
 			result.push(this.lines[1]);
 		}
 		return result;
+	}
+
+	private checkIfNetAmountIsCorrect(netAmountField: string, grossAmountField: string, taxField: string) {
+		const parsedNetAmount = parseFloat(netAmountField);
+		const parsedGrossAmount = parseFloat(grossAmountField);
+		const parsedTaxField = parseFloat(taxField);
+		return parsedNetAmount === parsedGrossAmount - (parsedGrossAmount * parsedTaxField) / 100;
 	}
 }
