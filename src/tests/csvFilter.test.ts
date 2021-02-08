@@ -1,11 +1,18 @@
 import { CsvFilter } from '../core/csvFilter';
 
+interface FileWithOneInvoiceLineHavingParams {
+	ivaTax?: string;
+	igicTax?: string;
+	netAmount?: string;
+	nif?: string;
+}
+
 describe('CSV filter', () => {
 	const header = 'Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente';
 	const emptyField = '';
 
 	it('allows for correct lines only', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving();
+		const invoiceLine = fileWithOneInvoiceLineHaving({});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -14,7 +21,7 @@ describe('CSV filter', () => {
 	});
 
 	it('allows only the correct lines when the igic tax is applied', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving('', '7', '930');
+		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '7', netAmount: '930', nif: emptyField });
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -23,7 +30,12 @@ describe('CSV filter', () => {
 	});
 
 	it('excludes lines with both tax fields populated as they are exclusive', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving('21', '7', '790');
+		const invoiceLine = fileWithOneInvoiceLineHaving({
+			ivaTax: '21',
+			igicTax: '7',
+			netAmount: '790',
+			nif: emptyField,
+		});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -32,7 +44,7 @@ describe('CSV filter', () => {
 	});
 
 	it('excludes lines with both tax field empty as one is required', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving('', '', '790');
+		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '', netAmount: '790', nif: emptyField });
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -41,7 +53,12 @@ describe('CSV filter', () => {
 	});
 
 	it('excludes lines with non decimal tax fields', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving('XYZ', '', '790');
+		const invoiceLine = fileWithOneInvoiceLineHaving({
+			ivaTax: 'XYZ',
+			igicTax: '',
+			netAmount: '790',
+			nif: emptyField,
+		});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -50,7 +67,12 @@ describe('CSV filter', () => {
 	});
 
 	it('excludes lines with both tax fields populated even if non decimal', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving('XYZ', '7', '790');
+		const invoiceLine = fileWithOneInvoiceLineHaving({
+			ivaTax: 'XYZ',
+			igicTax: '7',
+			netAmount: '790',
+			nif: emptyField,
+		});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -59,7 +81,12 @@ describe('CSV filter', () => {
 	});
 
 	it('excludes lines with miscalculated net amount for iva tax', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving('21', '', '900');
+		const invoiceLine = fileWithOneInvoiceLineHaving({
+			ivaTax: '21',
+			igicTax: '',
+			netAmount: '900',
+			nif: emptyField,
+		});
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -68,7 +95,7 @@ describe('CSV filter', () => {
 	});
 
 	it('excludes lines with miscalculated net amount for igic tax', () => {
-		const invoiceLine = fileWithOneInvoiceLineHaving('', '7', '900');
+		const invoiceLine = fileWithOneInvoiceLineHaving({ ivaTax: '', igicTax: '7', netAmount: '900', nif: emptyField });
 		const csvFilter = CsvFilter.create([header, invoiceLine]);
 
 		const result = csvFilter.filteredLines;
@@ -76,13 +103,17 @@ describe('CSV filter', () => {
 		expect(result).toEqual([header]);
 	});
 
-	function fileWithOneInvoiceLineHaving(ivaTax = '21', igicTax = emptyField, netAmount = '790') {
+	function fileWithOneInvoiceLineHaving({
+		ivaTax = '21',
+		igicTax = emptyField,
+		netAmount = '790',
+		nif = emptyField,
+	}: FileWithOneInvoiceLineHavingParams) {
 		const invoiceId = '1';
 		const invoiceDate = '02/05/2021';
 		const grossAmount = '1000';
 		const concept = 'ACER Laptop';
 		const cif = 'B76430134';
-		const nif = emptyField;
 		return [invoiceId, invoiceDate, grossAmount, netAmount, ivaTax, igicTax, concept, cif, nif].join(',');
 	}
 });
