@@ -29,6 +29,17 @@ describe('CSV filter', () => {
 		expect(result).toEqual([header, invoiceLine]);
 	});
 
+	it('allows only multiple correct lines', () => {
+		const invoiceLine = fileWithOneInvoiceLineHaving({});
+		const invoiceLine2 = fileWithOneInvoiceLineHaving({});
+
+		const csvFilter = CsvFilter.create([header, invoiceLine, invoiceLine2]);
+
+		const result = csvFilter.filteredLines;
+
+		expect(result).toEqual([header, invoiceLine, invoiceLine2]);
+	});
+
 	it('excludes lines with both tax fields populated as they are exclusive', () => {
 		const invoiceLine = fileWithOneInvoiceLineHaving({
 			ivaTax: '21',
