@@ -1,6 +1,7 @@
 import { CsvFilter } from '../core/csvFilter';
 
 interface FileWithOneInvoiceLineHavingParams {
+	invoiceId?: string;
 	ivaTax?: string;
 	igicTax?: string;
 	netAmount?: string;
@@ -114,12 +115,12 @@ describe('CSV filter', () => {
 	});
 
 	function fileWithOneInvoiceLineHaving({
+		invoiceId = '1',
 		ivaTax = '21',
 		igicTax = emptyField,
 		netAmount = '790',
 		nif = emptyField,
 	}: FileWithOneInvoiceLineHavingParams) {
-		const invoiceId = '1';
 		const invoiceDate = '02/05/2021';
 		const grossAmount = '1000';
 		const concept = 'ACER Laptop';
