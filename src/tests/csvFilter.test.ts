@@ -114,6 +114,19 @@ describe('CSV filter', () => {
 		expect(result).toEqual([header]);
 	});
 
+	it('excludes lines with repeated invoice id', () => {
+		const invoiceLine = fileWithOneInvoiceLineHaving({ invoiceId: '1' });
+		const invoiceLine2 = fileWithOneInvoiceLineHaving({ invoiceId: '1' });
+		const invoiceLine3 = fileWithOneInvoiceLineHaving({ invoiceId: '3' });
+		const invoiceLine4 = fileWithOneInvoiceLineHaving({ invoiceId: '4' });
+		const invoiceLine5 = fileWithOneInvoiceLineHaving({ invoiceId: '3' });
+		const csvFilter = CsvFilter.create([header, invoiceLine, invoiceLine2, invoiceLine3, invoiceLine4, invoiceLine5]);
+
+		const result = csvFilter.filteredLines;
+
+		expect(result).toEqual([header, invoiceLine4]);
+	});
+
 	function fileWithOneInvoiceLineHaving({
 		invoiceId = '1',
 		ivaTax = '21',
