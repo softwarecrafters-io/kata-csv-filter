@@ -93,6 +93,15 @@ describe('CSV filter', () => {
 		expect(result).toEqual([header]);
 	});
 
+	it('excludes lines with cif and nif fields populated as they are exclusive', () => {
+		const invoiceLine = fileWithOneInvoiceLineHaving({ nif: 'b76730373' });
+		const csvFilter = CsvFilter.create([header, invoiceLine]);
+
+		const result = csvFilter.filteredLines;
+
+		expect(result).toEqual([header]);
+	});
+
 	function fileWithOneInvoiceLineHaving({
 		ivaTax = '21',
 		igicTax = emptyField,
