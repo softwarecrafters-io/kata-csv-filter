@@ -6,6 +6,9 @@ export class CsvFilter {
 	}
 
 	get filteredLines() {
+		if (this.lines.length === 0) {
+			return [];
+		}
 		const header = this.lines[0];
 		const invoices = this.lines.slice(1);
 		const validatedInvoices = invoices.filter(this.validateInvoice);
