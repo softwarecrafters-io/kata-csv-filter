@@ -135,6 +135,14 @@ describe('CSV filter', () => {
 		expect(result).toEqual([]);
 	});
 
+	it('does not allow a list of invoices with a single line', () => {
+		const invoiceLine = fileWithOneInvoiceLineHaving({});
+
+		const result = () => CsvFilter.create([invoiceLine]);
+
+		expect(result).toThrow();
+	});
+
 	function fileWithOneInvoiceLineHaving({
 		invoiceId = '1',
 		ivaTax = '21',
