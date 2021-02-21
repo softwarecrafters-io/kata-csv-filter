@@ -14,10 +14,14 @@ export class CsvFilter {
 		}
 		const header = this.lines[0];
 		const invoices = this.lines.slice(1);
-		const validatedInvoices = invoices.filter(this.isValidInvoice);
+		const validatedInvoices = this.takeValidInvoices(invoices);
 		const duplicatedIds = this.takeRepeatedInvoiceIds(validatedInvoices);
 		const nonRepeatedInvoices = validatedInvoices.filter((invoice) => !duplicatedIds.includes(this.invoiceId(invoice)));
 		return [header].concat(nonRepeatedInvoices);
+	}
+
+	private takeValidInvoices(invoices: string[]) {
+		return invoices.filter(this.isValidInvoice);
 	}
 
 	private isValidInvoice = (invoice) => {
