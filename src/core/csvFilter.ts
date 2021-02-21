@@ -16,7 +16,7 @@ export class CsvFilter {
 		const invoices = this.lines.slice(1);
 		const validatedInvoices = invoices.filter(this.isValidInvoice);
 		const duplicatedIds = this.takeRepeatedInvoiceIds(validatedInvoices);
-		const nonRepeatedInvoices = validatedInvoices.filter((invoice) => !duplicatedIds.includes(invoice.split(',')[0]));
+		const nonRepeatedInvoices = validatedInvoices.filter((invoice) => !duplicatedIds.includes(this.invoiceId(invoice)));
 		return [header].concat(nonRepeatedInvoices);
 	}
 
@@ -44,7 +44,11 @@ export class CsvFilter {
 	}
 
 	private takeRepeatedInvoiceIds(invoices: string[]) {
-		const invoicesIds = invoices.map((invoice) => invoice.split(',')[0]);
+		const invoicesIds = invoices.map((invoice) => this.invoiceId(invoice));
 		return invoicesIds.filter((id, index) => invoicesIds.indexOf(id) !== index);
+	}
+
+	private invoiceId(invoice: string) {
+		return invoice.split(',')[0];
 	}
 }
