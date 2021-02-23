@@ -47,7 +47,6 @@ export class CsvFilter {
 	private takeUniqueInvoices(invoices: string[]) {
 		const invoicesIds = invoices.map((invoice) => this.invoiceId(invoice));
 		const duplicatedIds = invoicesIds.filter((id, index) => invoicesIds.indexOf(id) !== index);
-
 		return invoices.filter((invoice) => !duplicatedIds.includes(this.invoiceId(invoice)));
 	}
 
